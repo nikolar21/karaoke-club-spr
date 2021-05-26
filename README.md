@@ -22,26 +22,22 @@ Server side build command:
 
 ```
 $ gcc server.c -o server
-
 ```
 Client side build command: 
 
 ```
 $ gcc client .c -o client
-
 ```
 ## Running
 Server side: 
 
 ```
 $ ./server
-
 ```
 Client side: 
 
 ```
 $ ./client
-
 ```
 
 
