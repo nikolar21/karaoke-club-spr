@@ -7,7 +7,7 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #define MAX 3000
-#define PORT 8087
+#define PORT 8083
 #define SA struct sockaddr
 
 typedef struct Request {
@@ -20,7 +20,7 @@ typedef struct Response {
    char artist[50];
 }Response;    
 
-void func(int sockfd)
+void communicationProcess(int sockfd)
 {
 	char buff[MAX];
 
@@ -67,7 +67,7 @@ int main()
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd == -1) {
-		printf("socket creation failed...\n");
+		printf("Socket creation failed...\n");
 		exit(0);
 	}
 	else
@@ -87,8 +87,7 @@ int main()
 		
 	printf("Welcome to karaoke club, you can order your favorite songs for karaoke below!!\n");
 
-
-	func(sockfd);
+	communicationProcess(sockfd);
 
 	close(sockfd);
 }

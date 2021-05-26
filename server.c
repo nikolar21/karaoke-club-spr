@@ -11,7 +11,7 @@
 #include <sys/stat.h>  
 #include <fcntl.h>
 #define MAX 3000
-#define PORT 8087
+#define PORT 8083
 #define SA struct sockaddr
 
 typedef struct Request {
@@ -26,7 +26,7 @@ typedef struct Response {
 
 Response songs[100];
 
-void writeSong(Request newSong) {
+void addSongToCatalog(Request newSong) {
 	int fd;
 	fd = open("songs.bin", O_CREAT|O_APPEND|O_WRONLY);
 
@@ -34,13 +34,13 @@ void writeSong(Request newSong) {
     printf("Error: cannot open file songs.bin\n");
     exit(1);
   	}
-	//printf("writing song to file");
+	printf("Adding song to catalog.\n");
 	write(fd, &newSong, sizeof(Request));
 
 	close(fd);
 }
 
-void readSongs(Request requestedSong, int sockFd) {
+void getSongFromCatalog(Request requestedSong, int sockFd) {
 
 	char* songFoundMessage = "The song is played for karaoke...";
 	char* songNotFoundMessage = "The ordered song is not in my catalog, please order another song";
@@ -64,7 +64,6 @@ void readSongs(Request requestedSong, int sockFd) {
 	int flag = 0;
   int i;
   for (i=0;i<sizeof(savedSongs)/sizeof(Response);i++) {
-	  printf("%s", savedSongs[i].title);
 
 	  if (strcmp(requestedSong.title, savedSongs[i].title) == 0 && strcmp(requestedSong.artist, savedSongs[i].artist) == 0) {
 		  flag = 1;
@@ -74,13 +73,11 @@ void readSongs(Request requestedSong, int sockFd) {
 	  }
   }
 
-  //printf("%s", requestedSong.title);
-
   if (flag == 1) {
 		  write(sockFd, songFoundMessage, 150);
 	  } else {
 		  write(sockFd, songNotFoundMessage, 150);
-		  writeSong(requestedSong);
+		  addSongToCatalog(requestedSong);
 	  }
 
 	flag=0;
@@ -88,7 +85,7 @@ void readSongs(Request requestedSong, int sockFd) {
   close(fd);
 }
 
-void func(int sockfd)
+void communicationProcess(int sockfd)
 {
 	char buff[MAX];
 
@@ -108,7 +105,7 @@ void func(int sockfd)
 		
 		Response* response = malloc(sizeof(Response));
 
-		readSongs(*request, sockfd);
+		getSongFromCatalog(*request, sockfd);
 
 		if (strncmp("exit", buff, 4) == 0) {
 			printf("Server Exit...\n");
@@ -158,7 +155,7 @@ int main()
 	else
 		printf("Server acccept the client...\n");
 
-	func(connfd);
+	communicationProcess(connfd);
 
 	close(sockfd);
 }
