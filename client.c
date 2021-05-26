@@ -20,6 +20,13 @@ typedef struct Response {
    char artist[50];
 }Response;    
 
+
+/*
+ * Function designed for communication between client and server. 
+ * Receives message from client about title and artist.
+ * Client sends backs request with title and artist and receives response.
+ * Function is void so it doesn't return any value.
+ */
 void communicationProcess(int sockfd)
 {
 	char buff[MAX];
@@ -29,7 +36,6 @@ void communicationProcess(int sockfd)
 		bzero(buff, sizeof(buff));
 
 		Request* request = malloc(sizeof(Request));
-		
 
 		printf("Enter title: ");
 
@@ -60,6 +66,9 @@ void communicationProcess(int sockfd)
 	}
 }
 
+/*
+ * main function that is designed to try to connect with server
+ */
 int main()
 {
 	int sockfd, connfd;

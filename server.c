@@ -26,11 +26,16 @@ typedef struct Response {
 
 Response songs[100];
 
+/*
+ * Function mainly designed to take as parameter requested song that is not in the file and writes it to songs.bin file. 
+ * Function is void so it doesn't return any value.
+ */
 void addSongToCatalog(Request newSong) {
 	int fd;
 	fd = open("songs.bin", O_CREAT|O_APPEND|O_WRONLY);
 
-	if (fd == -1) { /* In the case of error, open returns -1 ! */
+	//In the case of error, open returns -1!
+	if (fd == -1) { 
     printf("Error: cannot open file songs.bin\n");
     exit(1);
   	}
@@ -40,6 +45,13 @@ void addSongToCatalog(Request newSong) {
 	close(fd);
 }
 
+/*
+ * Function designed for taking request from client and processing it further. 
+ * Expected to search and get the requested song from file and sending response to client.
+ * If the song is not present in the file, sends appropriate response.
+ * After that calls the function addSongToCatalog(Request newSong) and passes the requested song as parameter.
+ * Function is void so it doesn't return any value.
+ */
 void getSongFromCatalog(Request requestedSong, int sockFd) {
 
 	char* songFoundMessage = "The song is played for karaoke...";
@@ -49,7 +61,7 @@ void getSongFromCatalog(Request requestedSong, int sockFd) {
   fd = open("songs.bin", O_RDONLY);
   
   if (fd == -1){
-    printf("Error: file out.bin cannot be opened\n");
+    printf("Error: file songs.bin cannot be opened\n");
     exit(1);
   	}	
 
@@ -85,6 +97,11 @@ void getSongFromCatalog(Request requestedSong, int sockFd) {
   close(fd);
 }
 
+/*
+ * Function designed for communication between client and server. 
+ * Sends message to client, receives request from client and process it with calling other function like getSongFromCatalog(*request, sockfd)
+ * Function is void so it doesn't return any value.
+ */
 void communicationProcess(int sockfd)
 {
 	char buff[MAX];
@@ -114,6 +131,9 @@ void communicationProcess(int sockfd)
 	}
 }
 
+/*
+ * main function that is designed to wait for the client connection.
+ */
 int main()
 {
 	int sockfd, connfd, len;
@@ -128,10 +148,12 @@ int main()
 		printf("Socket successfully created..\n");
 	bzero(&servaddr, sizeof(servaddr));
 
+	// Assigning IP and PORT
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(PORT);
 
+	// Binding newly created socker to given IP
 	if ((bind(sockfd, (SA*)&servaddr, sizeof(servaddr))) != 0) {
 		printf("socket bind failed...\n");
 		exit(0);
@@ -139,6 +161,7 @@ int main()
 	else
 		printf("Socket successfully binded..\n");
 
+	// Server is ready for listening
 	if ((listen(sockfd, 5)) != 0) {
 		printf("Listen failed...\n");
 		exit(0);
@@ -147,6 +170,7 @@ int main()
 		printf("Server listening..\n");
 	len = sizeof(cli);
 
+	// Accepts the data packet from client
 	connfd = accept(sockfd, (SA*)&cli, &len);
 	if (connfd < 0) {
 		printf("Server acccept failed...\n");
