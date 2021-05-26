@@ -2,7 +2,7 @@
 
 ## Table of contents
 * [General info](#general-info)
-  [Prerequisites](#prerequisites)
+* [Prerequisites](#prerequisites)
 * [Technologies](#technologies)
 * [Installing](#installing)
 * [Running](#running)
